@@ -1,0 +1,23 @@
+# --- OS JUNK ---
+.DS_Store
+
+# --- PYTHON (Backend) ---
+__pycache__/
+*.py[cod]
+venv/
+.env
+plant_data.db   # Don't upload your actual data history
+*.db-journal
+
+# --- NODE/EXPO (Frontend) ---
+node_modules/
+.expo/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+web-build/
+
+# --- PLATFORMIO (Firmware) ---
+.pio/
+.vscode/
+compile_commands.json
