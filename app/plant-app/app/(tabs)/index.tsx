@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 // --- CONFIGURATION ---
-// REPLACE with your PythonAnywhere URL
+// REPLACE with your PythonAnywhere URL 
 const SERVER_URL = 'https://jghiorse.pythonanywhere.com/api/history'; 
 
 export default function App() {
