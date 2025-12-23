@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 // --- CONFIG ---
 // REPLACE with your actual PythonAnywhere URL
-const BASE_URL = 'http://jghiorse.pythonanywhere.com'; 
+const BASE_URL = 'https://jghiorse.pythonanywhere.com'; 
 
 const screenWidth = Dimensions.get("window").width;
 
