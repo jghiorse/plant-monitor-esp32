@@ -1,37 +1,50 @@
-import { Ionicons } from '@expo/vector-icons'; // Import Icons
+import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 // --- CONFIGURATION ---
-// REPLACE THIS WITH YOUR MAC'S IP ADDRESS
-// Note: Use http, not https. Port 5001.
-const SERVER_URL = 'http://10.0.0.12:5001/api/history'; 
+// REPLACE with your PythonAnywhere URL
+const SERVER_URL = 'https://jghiorse.pythonanywhere.com/api/history'; 
 
 export default function App() {
   const [data, setData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState("Never");
 
-  const fetchData = async () => {
-    setRefreshing(true);
+  // MODE: "isManual" determines if we show the loading spinner
+  const fetchData = async (isManual = false) => {
+    if (isManual) setRefreshing(true);
+    
     try {
-      console.log("Fetching from:", SERVER_URL);
+      console.log(isManual ? "Pull-to-Refresh..." : "Auto-Refreshing...");
       const response = await fetch(SERVER_URL);
       const json = await response.json();
       setData(json);
       setLastUpdated(new Date().toLocaleTimeString());
     } catch (error) {
       console.error("Fetch Error:", error);
-      alert("Could not connect to server.\nCheck if your Mac IP changed or if the server is running!");
+      // Only show the annoying alert if the user explicitly pulled to refresh
+      if (isManual) {
+        alert("Could not connect to server.");
+      }
     } finally {
-      setRefreshing(false);
+      if (isManual) setRefreshing(false);
     }
   };
 
-  // Fetch data immediately when app opens
+  // --- AUTO-REFRESH LOGIC ---
   useEffect(() => {
-    fetchData();
+    // 1. Load data immediately when app opens (Silent)
+    fetchData(false);
+
+    // 2. Set up a timer to run every 10 seconds (10000 ms)
+    const intervalId = setInterval(() => {
+      fetchData(false); // Silent refresh
+    }, 10000);
+
+    // 3. Cleanup: Stop the timer if the user leaves this screen
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
@@ -44,16 +57,16 @@ export default function App() {
       <ScrollView 
         contentContainerStyle={styles.scroll}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={fetchData} />
+          // When user pulls down, we pass 'true' to show the spinner
+          <RefreshControl refreshing={refreshing} onRefresh={() => fetchData(true)} />
         }
       >
         {data.length === 0 ? (
           <Text style={styles.emptyText}>
-            No data found yet.{'\n'}
-            Pull down to refresh!
+            Loading data...
           </Text>
         ) : (
-          data.map((reading, index) => {
+          data.map((reading: any, index: number) => {
             // Logic to determine battery icon color and name
             const battLevel = reading.batt_pct || 0;
             const isLowBatt = battLevel < 20;
@@ -62,10 +75,8 @@ export default function App() {
 
             return (
               <View key={index} style={styles.card}>
-                {/* --- HEADER OF CARD (Timestamp) --- */}
                 <Text style={styles.timestamp}>{reading.timestamp}</Text>
                 
-                {/* --- SENSOR ROWS --- */}
                 <View style={styles.row}>
                   <View style={styles.labelContainer}>
                     <Ionicons name="water-outline" size={20} color="#0288d1" />
@@ -94,7 +105,6 @@ export default function App() {
                   </Text>
                 </View>
 
-                {/* --- BATTERY ROW --- */}
                 <View style={[styles.row, { borderTopWidth: 1, borderTopColor: '#eee', paddingTop: 10, marginTop: 5 }]}>
                   <View style={styles.labelContainer}>
                     <Ionicons name={battIconName} size={20} color={battIconColor} />
@@ -128,7 +138,7 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     backgroundColor: '#2e7d32',
-    paddingTop: 60, // Extra padding for status bar area
+    paddingTop: 60, 
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
@@ -158,12 +168,10 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 20,
     marginBottom: 15,
-    // Shadow for iOS
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    // Shadow for Android
     elevation: 3,
   },
   row: {
