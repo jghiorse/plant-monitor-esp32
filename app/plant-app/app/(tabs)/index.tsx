@@ -40,12 +40,13 @@ export default function App() {
     const safeDate = timestampStr.replace(" ", "T") + "Z";
     const dateObj = new Date(safeDate);
 
-    // 3. Convert to Local Time (12-hour format)
+    // 3. Convert to Local Time (12-hour format WITH SECONDS)
     return dateObj.toLocaleString([], {
       month: 'short',
       day: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
+      second: '2-digit', // <--- Added this line
       hour12: true
     });
   };
@@ -82,7 +83,7 @@ export default function App() {
 
             return (
               <View key={index} style={styles.card}>
-                {/* USE NEW FORMATTER HERE */}
+                {/* Format Timestamp with Seconds */}
                 <Text style={styles.timestamp}>{formatTimestamp(reading.timestamp)}</Text>
                 
                 {/* --- SOIL MOISTURE --- */}
