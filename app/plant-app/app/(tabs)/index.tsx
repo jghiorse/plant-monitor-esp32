@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 // --- CONFIGURATION ---
-// REPLACE with your PythonAnywhere URL 
 const SERVER_URL = 'https://jghiorse.pythonanywhere.com/api/history'; 
 
 export default function App() {
@@ -24,7 +23,6 @@ export default function App() {
       setLastUpdated(new Date().toLocaleTimeString());
     } catch (error) {
       console.error("Fetch Error:", error);
-      // Only show the annoying alert if the user explicitly pulled to refresh
       if (isManual) {
         alert("Could not connect to server.");
       }
@@ -33,17 +31,30 @@ export default function App() {
     }
   };
 
-  // --- AUTO-REFRESH LOGIC ---
+  // --- TIME FORMATTER HELPER ---
+  const formatTimestamp = (timestampStr: string) => {
+    if (!timestampStr) return '--';
+    
+    // 1. Python sends "YYYY-MM-DD HH:MM:SS" (Space separator, no timezone)
+    // 2. We replace space with 'T' and add 'Z' to tell JS "This is UTC time"
+    const safeDate = timestampStr.replace(" ", "T") + "Z";
+    const dateObj = new Date(safeDate);
+
+    // 3. Convert to Local Time (12-hour format)
+    return dateObj.toLocaleString([], {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
   useEffect(() => {
-    // 1. Load data immediately when app opens (Silent)
     fetchData(false);
-
-    // 2. Set up a timer to run every 10 seconds (10000 ms)
     const intervalId = setInterval(() => {
-      fetchData(false); // Silent refresh
+      fetchData(false); 
     }, 10000);
-
-    // 3. Cleanup: Stop the timer if the user leaves this screen
     return () => clearInterval(intervalId);
   }, []);
 
@@ -57,25 +68,22 @@ export default function App() {
       <ScrollView 
         contentContainerStyle={styles.scroll}
         refreshControl={
-          // When user pulls down, we pass 'true' to show the spinner
           <RefreshControl refreshing={refreshing} onRefresh={() => fetchData(true)} />
         }
       >
         {data.length === 0 ? (
-          <Text style={styles.emptyText}>
-            Loading data...
-          </Text>
+          <Text style={styles.emptyText}>Loading data...</Text>
         ) : (
           data.map((reading: any, index: number) => {
-            // Logic to determine battery icon color and name
             const battLevel = reading.batt_pct || 0;
             const isLowBatt = battLevel < 20;
-            const battIconColor = isLowBatt ? '#d32f2f' : '#388e3c'; // Red vs Green
+            const battIconColor = isLowBatt ? '#d32f2f' : '#388e3c'; 
             const battIconName = isLowBatt ? 'battery-dead' : 'battery-full';
 
             return (
               <View key={index} style={styles.card}>
-                <Text style={styles.timestamp}>{reading.timestamp}</Text>
+                {/* USE NEW FORMATTER HERE */}
+                <Text style={styles.timestamp}>{formatTimestamp(reading.timestamp)}</Text>
                 
                 {/* --- SOIL MOISTURE --- */}
                 <View style={styles.row}>
@@ -86,7 +94,7 @@ export default function App() {
                   <Text style={styles.value}>{reading.soil_moisture}</Text>
                 </View>
 
-                {/* --- SOIL TEMP (NEW) --- */}
+                {/* --- SOIL TEMP --- */}
                 <View style={styles.row}>
                   <View style={styles.labelContainer}>
                     <Ionicons name="thermometer-outline" size={20} color="#795548" /> 
@@ -108,7 +116,7 @@ export default function App() {
                   </Text>
                 </View>
 
-                {/* --- HUMIDITY (NEW) --- */}
+                {/* --- HUMIDITY --- */}
                 <View style={styles.row}>
                   <View style={styles.labelContainer}>
                     <Ionicons name="cloudy-outline" size={20} color="#90caf9" />
