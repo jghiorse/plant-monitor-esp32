@@ -152,7 +152,25 @@ export default function GraphsScreen() {
               />
             </View>
 
-            {/* --- TEMP CHART --- */}
+            {/* --- SOIL TEMP CHART (NEW) --- */}
+            <View style={styles.chartContainer}>
+              <Text style={styles.chartTitle}>🌡 Soil Temp (°F)</Text>
+              <LineChart
+                data={{
+                  labels: getLabels(),
+                  datasets: [{ data: data.map(d => d.soil_temp_f) }]
+                }}
+                width={screenWidth - 40}
+                height={220}
+                yAxisLabel=""
+                yAxisSuffix="°"
+                chartConfig={{...chartConfig, color: (opacity = 1) => `rgba(121, 85, 72, ${opacity})`}} // Brown
+                bezier
+                style={styles.chart}
+              />
+            </View>
+
+            {/* --- AIR TEMP CHART --- */}
             <View style={styles.chartContainer}>
               <Text style={styles.chartTitle}>🌡 Air Temp (°F)</Text>
               <LineChart
@@ -165,6 +183,24 @@ export default function GraphsScreen() {
                 yAxisLabel=""
                 yAxisSuffix="°"
                 chartConfig={{...chartConfig, color: (opacity = 1) => `rgba(255, 152, 0, ${opacity})`}} 
+                bezier
+                style={styles.chart}
+              />
+            </View>
+
+            {/* --- HUMIDITY CHART (NEW) --- */}
+            <View style={styles.chartContainer}>
+              <Text style={styles.chartTitle}>☁️ Humidity (%)</Text>
+              <LineChart
+                data={{
+                  labels: getLabels(),
+                  datasets: [{ data: data.map(d => d.humidity) }]
+                }}
+                width={screenWidth - 40}
+                height={220}
+                yAxisLabel=""
+                yAxisSuffix="%"
+                chartConfig={{...chartConfig, color: (opacity = 1) => `rgba(100, 181, 246, ${opacity})`}} // Light Blue
                 bezier
                 style={styles.chart}
               />

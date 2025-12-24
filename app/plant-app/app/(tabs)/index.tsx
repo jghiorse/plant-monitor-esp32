@@ -77,6 +77,7 @@ export default function App() {
               <View key={index} style={styles.card}>
                 <Text style={styles.timestamp}>{reading.timestamp}</Text>
                 
+                {/* --- SOIL MOISTURE --- */}
                 <View style={styles.row}>
                   <View style={styles.labelContainer}>
                     <Ionicons name="water-outline" size={20} color="#0288d1" />
@@ -85,6 +86,18 @@ export default function App() {
                   <Text style={styles.value}>{reading.soil_moisture}</Text>
                 </View>
 
+                {/* --- SOIL TEMP (NEW) --- */}
+                <View style={styles.row}>
+                  <View style={styles.labelContainer}>
+                    <Ionicons name="thermometer-outline" size={20} color="#795548" /> 
+                    <Text style={styles.label}> Soil Temp</Text>
+                  </View>
+                  <Text style={styles.value}>
+                    {reading.soil_temp_f ? reading.soil_temp_f.toFixed(1) + '°F' : '--'}
+                  </Text>
+                </View>
+
+                {/* --- AIR TEMP --- */}
                 <View style={styles.row}>
                   <View style={styles.labelContainer}>
                     <Ionicons name="thermometer-outline" size={20} color="#f57c00" />
@@ -95,6 +108,18 @@ export default function App() {
                   </Text>
                 </View>
 
+                {/* --- HUMIDITY (NEW) --- */}
+                <View style={styles.row}>
+                  <View style={styles.labelContainer}>
+                    <Ionicons name="cloudy-outline" size={20} color="#90caf9" />
+                    <Text style={styles.label}> Humidity</Text>
+                  </View>
+                  <Text style={styles.value}>
+                    {reading.humidity ? reading.humidity.toFixed(1) + '%' : '--'}
+                  </Text>
+                </View>
+
+                {/* --- LIGHT --- */}
                 <View style={styles.row}>
                   <View style={styles.labelContainer}>
                     <Ionicons name="sunny-outline" size={20} color="#fbc02d" />
@@ -105,6 +130,7 @@ export default function App() {
                   </Text>
                 </View>
 
+                {/* --- BATTERY --- */}
                 <View style={[styles.row, { borderTopWidth: 1, borderTopColor: '#eee', paddingTop: 10, marginTop: 5 }]}>
                   <View style={styles.labelContainer}>
                     <Ionicons name={battIconName} size={20} color={battIconColor} />
